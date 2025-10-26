@@ -20,6 +20,9 @@ import { Commands } from "@uniswap/universal-router/contracts/libraries/Commands
 
 import {CurrencySettler} from "@uniswap/v4-core/test/utils/CurrencySettler.sol";
 
+import { PoolKey as PoolKey1 } from "@uniswap/v4-periphery/lib/v4-core/src/types/PoolKey.sol";
+import { Currency as Currency1 } from "@uniswap/v4-periphery/lib/v4-core/src/types/Currency.sol";
+import { IHooks as IHooks1 } from "@uniswap/v4-periphery/lib/v4-core/src/interfaces/IHooks.sol";
 
 import {BaseHook} from "@openzeppelin/uniswap-hooks/src/base/BaseHook.sol";
 
@@ -264,10 +267,16 @@ contract OpHookTest is Test {
         );
 
         bytes[] memory params = new bytes[](3);
-
+PoolKey1 memory key1 = PoolKey1({
+            currency0: Currency1.wrap(Currency.unwrap(poolKey1.currency0)),
+            currency1: Currency1.wrap(Currency.unwrap(poolKey1.currency1)),
+            fee: poolKey1.fee,
+            tickSpacing: poolKey1.tickSpacing,
+            hooks: IHooks1(address(poolKey1.hooks))
+        });
         params[0] = abi.encode(
             IV4Router.ExactInputSingleParams({
-                poolKey: poolKey1,
+                poolKey: key1,
                 zeroForOne: true,
                 amountIn: 1e6,
                 amountOutMinimum: 0,
